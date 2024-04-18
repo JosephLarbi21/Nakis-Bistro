@@ -1,21 +1,25 @@
-import express, {Request, Response} from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
-import "dotenv/config";
 import mongoose from "mongoose";
+import myUserRoute from "./routes/MyUserRoutes";
 
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string).then(()=>console.log("connected to a database!"));
+const uri =
+  "mongodb+srv://admin:uLN6qGghB6zkRtLG@cluster0.gl8dxt6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
+mongoose
+  .connect(process.env.MONGODB_CONNECTION_STRING || (uri as string))
+  .then(() => console.log("connected to a database!"));
 
-const app= express();
+const app = express();
 app.use(express.json());
 app.use(cors());
 
-
-app.get("/test",async (req: Request,res:Response)=>{
-    res.json({message:"Hello World"});
-
+app.get("/health", async (req: Request, res: Response) => {
+  res.send({ message: "health OK!" });
 });
 
-app.listen(7000, () =>{
-console.log("Server is running in http://localhost:7000");
-})
+app.use("/api/my/user", myUserRoute);
+
+app.listen(7000, () => {
+  console.log("Server is running in http://localhost:7000");
+});
